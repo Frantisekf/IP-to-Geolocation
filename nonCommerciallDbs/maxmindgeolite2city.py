@@ -104,3 +104,7 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
                           error + "\n")
 
         reader.close()
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

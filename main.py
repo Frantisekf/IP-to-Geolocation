@@ -5,11 +5,16 @@ import argparse
 import os
 import sys
 
+import mapGenerator
+
 import fileprocessing
 from commerciallDBs import db_ip, eurek, ip2location, geobytes, ipinfo, neustar, maxmind, skyhook
 from nonCommerciallDbs import maxmindgeolite2city, freegeoip, ip2City, ip2locdb11lite
 
+
 __author__ = "Frantisek Farkas"
+
+delimiter = "\t"
 
 if sys.version_info.major != 3:
     print("ERROR: Run this script with Python 3!", file=sys.stderr)
@@ -62,6 +67,7 @@ parser.add_argument("-v", help='Increase Output Verbosity', dest='verbose', acti
 parser.add_argument("-c", help='Cut words in specified file', dest='cut', default='')
 parser.add_argument("-r", help='Replace words in specified file', dest='replace', default='')
 
+parser.
 arguments = parser.parse_args()
 
 #   Databases modules Dictonary
@@ -100,6 +106,8 @@ except OSError as error:
     print(error)
 
 
+
+
 # Definition of Main Processing
 def main():
 
@@ -123,4 +131,6 @@ def main():
         except KeyError as error:
             print("Wrong Database name:", error, "See Help (-h) for Dabatases & Links name to use !", file=sys.stderr)
 
+
+mapGenerator.MapGenerator(path,delimiter).generate_html()
 main()

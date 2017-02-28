@@ -100,4 +100,7 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
                           separator + latitude + separator + longitude + separator +
                           error + "\n")
 
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
 

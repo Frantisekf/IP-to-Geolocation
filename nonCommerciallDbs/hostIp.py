@@ -60,6 +60,8 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
             else:
                 city_match = 'NO'
 
+    #ERROR CALCULATION
+
     error = '-'
 
     if latitude != '-' and longitude != '-':
@@ -79,3 +81,7 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
                       separator + latitude + city + separator + city_match +
                       separator + latitude + separator + longitude + separator +
                       error + "\n")
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

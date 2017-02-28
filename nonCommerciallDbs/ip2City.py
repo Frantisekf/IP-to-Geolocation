@@ -8,7 +8,7 @@ import geocoder
 
 
 def check_ips(ipRecords, separator, cut, replace, verbose):
-    api_key = 'bdf6930fac585dd37b9dc225e0864327c999a011'
+    api_key = 'a22537003320ff43a5120079e3362c67aa6c9a13'
 
     # output file preparation & separator
 
@@ -18,7 +18,7 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
         separator = ' '
 
     current_date_and_time = datetime.datetime.now().strftime("%Y%m%dT%H%M%S")
-    filename = "./results/maxMindGeoIp2Pre_" + current_date_and_time + ".dat"
+    filename = "./results/ip2city_" + current_date_and_time + ".dat"
     output_file = open(filename, "w", encoding="utf-8")
 
     for ipRecord in ipRecords:
@@ -98,3 +98,7 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
                       separator + latitude + city + separator + city_match +
                       separator + latitude + separator + longitude + separator +
                       error + "\n")
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
