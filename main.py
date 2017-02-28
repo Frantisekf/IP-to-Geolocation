@@ -67,7 +67,7 @@ parser.add_argument("-v", help='Increase Output Verbosity', dest='verbose', acti
 parser.add_argument("-c", help='Cut words in specified file', dest='cut', default='')
 parser.add_argument("-r", help='Replace words in specified file', dest='replace', default='')
 
-parser.
+
 arguments = parser.parse_args()
 
 #   Databases modules Dictonary
