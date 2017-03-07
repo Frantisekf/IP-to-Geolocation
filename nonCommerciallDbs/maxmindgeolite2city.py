@@ -5,8 +5,7 @@ import datetime
 from urllib import request
 
 import geoip2.database
-
-from geocoder.geopy.geopy.distance import vincenty
+from geopy.distance import vincenty
 
 
 def check_ips(ipRecords, separator, cut, replace, verbose):

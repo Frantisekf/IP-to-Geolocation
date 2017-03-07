@@ -5,12 +5,11 @@ import argparse
 import os
 import sys
 
-import mapGenerator
+import mapgenerator
 
 import fileprocessing
 from commerciallDBs import db_ip, eurek, ip2location, geobytes, ipinfo, neustar, maxmind, skyhook
 from nonCommerciallDbs import maxmindgeolite2city, freegeoip, ip2City, ip2locdb11lite
-
 
 __author__ = "Frantisek Farkas"
 
@@ -61,12 +60,13 @@ parser.add_argument("-d", help='Geolocation Database to be used', dest='database
                                                                                                            'freegeoip',
                                                                                                            'Ip2locdb11lite'])
 
-parser.add_argument("-i", help='Input File Records Delimiter', default='tab', dest='input_separator', choices=['tab', 'space'])
-parser.add_argument("-o", help='Output File Records Delimiter', default='tab', dest='output_separator', choices=['tab', 'space'])
+parser.add_argument("-i", help='Input File Records Delimiter', default='tab', dest='input_separator',
+                    choices=['tab', 'space'])
+parser.add_argument("-o", help='Output File Records Delimiter', default='tab', dest='output_separator',
+                    choices=['tab', 'space'])
 parser.add_argument("-v", help='Increase Output Verbosity', dest='verbose', action='store_true')
 parser.add_argument("-c", help='Cut words in specified file', dest='cut', default='')
 parser.add_argument("-r", help='Replace words in specified file', dest='replace', default='')
-
 
 arguments = parser.parse_args()
 
@@ -106,11 +106,8 @@ except OSError as error:
     print(error)
 
 
-
-
 # Definition of Main Processing
 def main():
-
     ip_records = fileprocessing.get_ip_records(arguments.FILE, arguments.input_separator)
 
     if ip_records is None:
@@ -118,7 +115,8 @@ def main():
         return
 
     if arguments.verbose:
-        print("Correct input record identified by 'correct=1' last field in _IP_RECORD tuple. Incorrect record identified by 'correct=0' field.")
+        print(
+            "Correct input record identified by 'correct=1' last field in _IP_RECORD tuple. Incorrect record identified by 'correct=0' field.")
         for ipRecord in ip_records:
             print(ipRecord)
 
@@ -127,10 +125,10 @@ def main():
             value.check_ips(ip_records, arguments.output_separator, arguments.cut, arguments.replace, arguments.verbose)
     else:
         try:
-            databases[arguments.database].check_ips(ip_records, arguments.output_separator, arguments.cut, arguments.replace, arguments.verbose)
+            databases[arguments.database].check_ips(ip_records, arguments.output_separator, arguments.cut,
+                                                    arguments.replace, arguments.verbose)
         except KeyError as error:
             print("Wrong Database name:", error, "See Help (-h) for Dabatases & Links name to use !", file=sys.stderr)
 
-
-mapGenerator.MapGenerator(path,delimiter).generate_html()
+    fileprocessing.process_output('input.dat',path, '\t', '\t' )
 main()

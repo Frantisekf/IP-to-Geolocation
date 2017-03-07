@@ -1,11 +1,12 @@
+#!/usr/bin/env python3
 import doctest
 import folium
 import csv
 
 
-class MapGenerator:
-    # ctor
-    def __init__(self, delimiter, file_path):
+class mapgenerator:
+
+    def __init__(self, delimiter, file_path, output_name):
         self.file_path = file_path
         self.delimiter = delimiter
 
