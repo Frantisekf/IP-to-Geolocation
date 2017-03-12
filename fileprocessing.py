@@ -10,15 +10,9 @@ It will create list of IP records which needs to be checked.
 import collections
 import csv
 import os
-import pandas as pd
+
 import folium
-import mapgenerator
-
-# class IncorrectInputLine(Exception): pass
-
-# _IP_RECORD = collections.namedtuple("_IP_RECORD", "id ip dns countryCoordinate regionCoordinate cityCoordinate \
-#                                    unknown_parameter_1 unknown_parameter_2 latitudeCoordinate longitudeCoordinate \
-#                                    row correct")
+import pandas as pd
 
 _IP_RECORD = collections.namedtuple("_IP_RECORD", "id ip dns continent countryCoordinate regionCoordinate cityCoordinate \
     unknown_parameter_1 unknown_parameter_2 latitudeCoordinate longitudeCoordinate dns_correction \
@@ -83,49 +77,38 @@ def get_ip_records(filename, input_separator):
     return ip_records
 
 
-def process_output(input_path, output_path, input_separator, output_separator):
-    for fname in os.listdir(output_path):
-        if fname.endswith('.dat'):
-            try:
-                open(fname, 'w').readlines()
-            except FileNotFoundError:
-                print("No file found in the directory!")
-            else:
-                # df from input csv
-                input_df = pd.read_csv(input_path, delimiter=input_separator, header=None,
-                                       names=["id", "ip_address", "server_name", "continent", "country", "city",
-                                              "region", "website", "institute_name", "latitude", "longitude",
-                                              "comment"])
+# creates a df from output csv for each DB and prints folium map
+def process_output(path, separator):
+    for file in os.listdir(path):
+        if file.endswith(".dat"):
+            file = os.path.join(path, file)
 
-                # df from output csv for each DB
-                output_df = pd.read_csv(fname, delimiter=output_separator, header=None,
-                                        names=["name_result", "country_result", "country match_result",
-                                               "region_result", "region_match_result",
-                                               "city_result", "city_match_result", "latitude_result",
-                                               "longitude_result",
-                                               "error"])
+            columns = ["id", "ipAddress", "serverName", "continent", "country", "city", "region", "website",
+                       "instituteName", "latitude", "longitude", "comment", "database", "countryEst", "countryEst",
+                       "regionEst", "regionEstMatch", "cityEst", "cityEstMatch", "latitudeEst", "longitudeEst",
+                       "errorEst"]
+            df = pd.read_csv(file, delimiter=separator, header=None, names=columns)
 
-                # joined dataframes input & output
-                dfs = input_df.join(output_df)
-                for index, row in dfs.iterrows():
-                    if row['latitude'] != row['latitude_result'] and row['longitude'] != row['longitude_result']:
-                        map = folium.Map(location=[row['latitude'], row['longitude']], zoom_start=1)
-                        # folium markers
-                        folium.Marker([row['latitude'], row['longitude']],
-                                      popup=row['server_name'] + ": " + row['ip_address'])
-                        folium.Marker([row['latitude_result'], row['longitude_result']],
-                                      popup=row['server_name'] + ": " + row['latitude_result'] + row[
-                                          'longitude_result'])
-                        # drawing lines
-                        folium.PolyLine(locations=[row['latitude'], row['longitude'],
-                                                   [row['latitude_result'], row['longitude_result']]], color="red",
-                                        weight=2.5, opacity=1).add_to(map)
-                        map.save('./results/maps/' + row['id'] + '.html')
-            break
+            for index, row in df.iterrows():
+                map = folium.Map(location=[row['latitude'], row['longitude']], zoom_start=8)
+                # add markers
+                original = folium.Marker([row['latitude'], row['longitude']],
+                                         popup=row['serverName'] + ": " +
+                                               str(row['latitude']) + ';' + str(row['longitude'])).add_to(map)
+                estimate = folium.Marker([row['latitudeEst'], row['longitudeEst']],
+                                         popup=row['serverName'] + ": " +
+                                               str(row['latitudeEst']) + ';' + str(row['longitudeEst'])).add_to(map)
+                # add lines
+                points = [original.location, estimate.location]
+                folium.PolyLine(locations=points, color="red", weight=2.5, opacity=1).add_to(map)
+                # save map
+                map
 
-        break
+                dbFolder = path + '/maps/' + str(row['database'])
+                if not os.path.exists(dbFolder):
+                    os.makedirs(dbFolder)
 
-
+                map.save(dbFolder + '/' + str(row['id']) + '_' + str(row['database']) + '.html')
 
 
 if __name__ == "__main__":

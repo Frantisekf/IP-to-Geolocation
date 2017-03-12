@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
-import datetime
-import urllib.request
-import urllib.parse
-import urllib.error
-import re
-from geopy.distance import vincenty
-import time
 import csv
+import datetime
+import re
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+
+from geopy.distance import vincenty
 
 url = "http://www.ip2location.com/demo/"
 
@@ -37,10 +38,10 @@ html_lat_lon = re.compile(r"""    ([-+\d\.]+)         #   Latitude
 
 database_limit = re.compile('Query limit is.*?([\d]{1,2})/50', re.DOTALL)
 
+
 ############################################### CHECK IP'S METHOD ######################################################
 
 def check_ips(ipRecords, separator, cut, replace, verbose):
-
     if separator == 'tab':
         separator = '\t'
     else:
@@ -60,16 +61,18 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
 
             #   Checking for Incorrect input record
             if ipRecord.correct == 0:
-                output_file.write(separator.join(ipRecord.row) + separator + "ip2LocDb24" + separator + "Error in input data in this line\n")
+                output_file.write(separator.join(
+                    ipRecord.row) + separator + "ip2LocDb24" + separator + "Error in input data in this line\n")
                 continue
 
-            #   If we reached daily limit, write out to file and continue to next line
+            # If we reached daily limit, write out to file and continue to next line
             if current_limit is not None and int(current_limit.group(1)) == 0:
-                #output_file.write("Maximum free requests reached!\n")
-                #output_file.close()
-                output_file.write(separator.join(ipRecord.row) + separator + "ip2LocDb24" + separator + "Maximum free requests reached!\n")
+                # output_file.write("Maximum free requests reached!\n")
+                # output_file.close()
+                output_file.write(separator.join(
+                    ipRecord.row) + separator + "ip2LocDb24" + separator + "Maximum free requests reached!\n")
                 continue
-                #return
+                # return
 
             values = {'ipAddress': ipRecord.ip}
             data = urllib.parse.urlencode(values)
@@ -166,11 +169,11 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
                                       previous,
                                       'AFTER: ', city_estimation)
                 replace_file.close()
-            #   CUT
+            # CUT
 
             if cut != '':
                 cut_file = open(cut, "r", encoding='utf-8')
-                #reader = csv.reader(cut_file, delimiter=' ')
+                # reader = csv.reader(cut_file, delimiter=' ')
                 for row in cut_file:
                     row = row.strip()
                     # print(row[0], ' will by replaced by ', '<empty>')
@@ -219,7 +222,7 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
                 country_estimation = "-"
                 country_estimation_match = "UNK"
 
-            #   REGION
+            # REGION
             if region_estimation is not None:
                 if region_estimation == ipRecord.regionCoordinate.strip('"'):
                     region_estimation_match = "YES"
@@ -229,7 +232,7 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
                 region_estimation = "-"
                 region_estimation_match = "UNK"
 
-            #   CITY
+            # CITY
             if city_estimation is not None:
                 if city_estimation == ipRecord.cityCoordinate.strip('"'):
                     city_estimation_match = "YES"
@@ -265,10 +268,10 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
             #     print("MEDZERA")
 
             output_file.write(separator.join(ipRecord.row) + separator + "ip2LocDb24" + separator + country_estimation +
-                         separator + country_estimation_match + separator + region_estimation + separator +
-                         region_estimation_match + separator + city_estimation + separator + city_estimation_match +
-                         separator + latitude_estimation + separator + longitude_estimation + separator +
-                         error_estimation + "\n")
+                              separator + country_estimation_match + separator + region_estimation + separator +
+                              region_estimation_match + separator + city_estimation + separator + city_estimation_match +
+                              separator + latitude_estimation + separator + longitude_estimation + separator +
+                              error_estimation + "\n")
 
             time.sleep(2);
 

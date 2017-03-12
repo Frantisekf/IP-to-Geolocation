@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 
-import datetime
-import urllib.request
-import urllib.parse
-import json
 import csv
+import datetime
+import json
+import urllib.parse
+import urllib.request
+
 from geopy.distance import vincenty
 
 url = "http://getcitydetails.geobytes.com/GetCityDetails"
 
 
 def check_ips(ipRecords, separator, cut, replace, verbose):
-
     #   Output file & Separator preparation
 
     if separator == 'tab':
@@ -172,7 +172,7 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
             retrieved = (float(latitude), float(longitude))
             error = vincenty(correct, retrieved).kilometers
 
-        #   OUTPUT TO FILE
+        # OUTPUT TO FILE
 
         latitude = str(latitude)
         longitude = str(longitude)

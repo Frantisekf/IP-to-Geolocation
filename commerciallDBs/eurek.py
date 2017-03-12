@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
 
-import datetime
-import urllib.request
-import urllib.parse
-import json
 import csv
-from geopy.distance import vincenty
+import datetime
+import json
 import time
+import urllib.parse
+import urllib.request
+
+from geopy.distance import vincenty
 
 ############### KEY ###########################
-key = 'SAKRUG98WDQ6S73M884Z'        #AUTH KEY!#
+key = 'SAKRUG98WDQ6S73M884Z'  # AUTH KEY!#
 ###############################################
 
 url = 'http://api.eurekapi.com/iplocation/v1.8/locateip'
 
 
 def check_ips(ipRecords, separator, cut, replace, verbose):
-
     #   Output file & Separator preparation
 
     if separator == 'tab':
@@ -74,7 +74,8 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
 
         #   Checking for Incorrect input record
         if ipRecord.correct == 0:
-            output_file.write(separator.join(ipRecord.row) + separator + "eurekAPI" + separator + "Error in input data in this line\n")
+            output_file.write(separator.join(
+                ipRecord.row) + separator + "eurekAPI" + separator + "Error in input data in this line\n")
             continue
 
         parameters = {
@@ -130,14 +131,14 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
             if content_json['geolocation_data'].get('longitude'):
                 longitude = content_json['geolocation_data'].get('longitude')
 
-            # DEBUG - after retrieval
-            # print('Country: ' + country)
-            # print('Region: ' + region)
-            # print('City: ' + city)
-            # print('Latitude: ' + str(latitude))
-            # print('Longitude: ' + str(longitude))
+                # DEBUG - after retrieval
+                # print('Country: ' + country)
+                # print('Region: ' + region)
+                # print('City: ' + city)
+                # print('Latitude: ' + str(latitude))
+                # print('Longitude: ' + str(longitude))
 
-        #   DATA MODIFICATION
+        # DATA MODIFICATION
 
         if replace:
             if country != '-':
@@ -186,7 +187,7 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
             else:
                 city_match = 'NO'
 
-        #   ERROR CALCULATION
+        # ERROR CALCULATION
 
         error = '-'
 
@@ -195,7 +196,7 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
             retrieved = (float(latitude), float(longitude))
             error = vincenty(correct, retrieved).kilometers
 
-        #   OUTPUT TO FILE
+        # OUTPUT TO FILE
 
         latitude = str(latitude)
         longitude = str(longitude)

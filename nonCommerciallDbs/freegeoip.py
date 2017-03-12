@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 
 import datetime
-import urllib
-import urllib.request
-import urllib.parse
 import json
+import urllib
+import urllib.parse
+import urllib.request
+
 from geopy.distance import vincenty
 
+
 def check_ips(ipRecords, separator, cut, replace, verbose):
-    #Output file & Separator preparation
+    # Output file & Separator preparation
 
     if separator == 'tab':
         separator = '\t'
@@ -18,8 +20,6 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
     current_date_and_time = datetime.datetime.now().strftime("%Y%m%dT%H%M%S")
     filename = "./results/freegeoip" + current_date_and_time + ".dat"
     output_file = open(filename, "w", encoding="utf-8")
-
-
 
     for ipRecord in ipRecords:
         request = request.get('http://freegeoip.net/json/' + urllib.quote(ipRecord), timeout=62)
@@ -34,29 +34,25 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
         latitude = '-'
         longitude = '-'
 
-
         if content_json.get('data'):
 
-            #country
+            # country
             if content_json['data']['civic'].get('countryIso'):
                 country = content_json['country']
-            #state
+            # state
             if content_json['data']['civic'].get('state'):
                 region = content_json['region_name']
-            #city
+            # city
             if content_json['data']['civic'].get('city'):
                 city = content_json['city']
 
         if content_json['data'].get('location'):
-
 
             if content_json['data']['location']:
                 latitude = content_json['location']
 
             if content_json['data']['location'].get('longitude'):
                 longitude = content_json['longitude']
-
-
 
         country_match = 'UNK'
         region_match = 'UNK'
@@ -80,8 +76,7 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
             else:
                 city_match = 'NO'
 
-
-        #ERROR CALC
+        # ERROR CALC
 
         error = '-'
 
@@ -90,8 +85,7 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
             retrieved = (float(latitude), float(longitude))
             error = vincenty(correct, retrieved).kilometers
 
-
-        #OUTPUT TO FILE
+        # OUTPUT TO FILE
 
         latitude = str(latitude)
         longitude = str(longitude)
@@ -105,7 +99,7 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
                           error + "\n")
 
 
-
 if __name__ == "__main__":
     import doctest
+
     doctest.testmod()

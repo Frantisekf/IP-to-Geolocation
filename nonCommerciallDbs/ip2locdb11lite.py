@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
-import ip2location_lib
-import  datetime
+import datetime
+
 from geopy.distance import vincenty
+
+import ip2location_lib
 
 
 def check_ips(ipRecords, separator, cut, replace, verbose):
-
-    #Output file & Separator preparation
+    # Output file & Separator preparation
 
     if separator == 'tab':
         separator = '\t'
@@ -18,13 +19,11 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
     filename = "./results/ip2locdb11lite" + current_date_and_time + ".dat"
     output_file = open(filename, "w", encoding="utf-8")
 
-
     path = '/home/ferko/Dropbox/school/Bakalarka/Stefan_zima/IP2LOCATION-DB11.CSV'
 
     ip2locObj = ip2location_lib.IP2Location()
 
     ip2locObj.open(path)
-
 
     for ipRecord in ipRecords:
 
@@ -55,8 +54,7 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
         else:
             longitude = '-'
 
-
-        #data match
+        # data match
 
         country_match = 'UNK'
         region_match = 'UNK'
@@ -100,7 +98,8 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
                           separator + latitude + separator + longitude + separator +
                           error + "\n")
 
+
 if __name__ == "__main__":
     import doctest
-    doctest.testmod()
 
+    doctest.testmod()

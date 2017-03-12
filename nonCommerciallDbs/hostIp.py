@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import datetime
 import json
-import urllib.request
 import urllib.error
+import urllib.request
 import urllib.request
 
 from geocoder.geopy.geopy.distance import vincenty
@@ -60,7 +60,7 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
             else:
                 city_match = 'NO'
 
-    #ERROR CALCULATION
+    # ERROR CALCULATION
 
     error = '-'
 
@@ -82,6 +82,8 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
                       separator + latitude + separator + longitude + separator +
                       error + "\n")
 
+
 if __name__ == "__main__":
     import doctest
+
     doctest.testmod()

@@ -5,8 +5,6 @@ import argparse
 import os
 import sys
 
-import mapgenerator
-
 import fileprocessing
 from commerciallDBs import db_ip, eurek, ip2location, geobytes, ipinfo, neustar, maxmind, skyhook
 from nonCommerciallDbs import maxmindgeolite2city, freegeoip, ip2City, ip2locdb11lite
@@ -97,6 +95,7 @@ if arguments.verbose:
 
 # Preparing Results Directory
 
+# links to output_path in fileprocessing
 path = "./results"
 
 try:
@@ -130,5 +129,7 @@ def main():
         except KeyError as error:
             print("Wrong Database name:", error, "See Help (-h) for Dabatases & Links name to use !", file=sys.stderr)
 
-    fileprocessing.process_output('input.dat',path, '\t', '\t' )
+    fileprocessing.process_output(path, '\t')
+
+
 main()

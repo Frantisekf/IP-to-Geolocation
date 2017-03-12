@@ -7,23 +7,24 @@ It will create list of IP records which needs to be checked.
 []
 """
 
-import datetime
-import urllib.request
-import urllib.parse
-import urllib.error
-import re
-from geopy.distance import vincenty
-import time
 import csv
+import datetime
+import re
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+
+from geopy.distance import vincenty
+
 
 def check_ips(ipRecords, separator, cut, replace, verbose):
-
     if separator == 'tab':
         separator = '\t'
     else:
         separator = ' '
 
-    #   Get Current Time and Date for Filename
+    # Get Current Time and Date for Filename
     current_date_and_time = datetime.datetime.now().strftime("%Y%m%dT%H%M%S")
 
     #   Opening Input File
@@ -35,7 +36,8 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
 
             #   Checking for Incorrect input record
             if ipRecord.correct == 0:
-                outputFile.write(separator.join(ipRecord.row) + separator + "ipInfo" + separator + "Error in input data in this line\n")
+                outputFile.write(separator.join(
+                    ipRecord.row) + separator + "ipInfo" + separator + "Error in input data in this line\n")
                 continue
 
             url = "https://ipinfo.io/" + ipRecord.ip + "/json?token=iplocation.net"
@@ -54,11 +56,11 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
                 latitudeEstimation = None
                 longitudeEstimation = None
 
-            #print("Contry: ", countryEstimation.group(1))
-            #print("Region: ", regionEstimation.group(1), " Len: ", len(regionEstimation.group(1)))
-            #print("City: ", cityEstimation.group(1))
-            #print("Latitude: ", latitudeEstimation)
-            #print("Longitude: ", longitudeEstimation)
+            # print("Contry: ", countryEstimation.group(1))
+            # print("Region: ", regionEstimation.group(1), " Len: ", len(regionEstimation.group(1)))
+            # print("City: ", cityEstimation.group(1))
+            # print("Latitude: ", latitudeEstimation)
+            # print("Longitude: ", longitudeEstimation)
 
             errorEstimation = "-"
 
@@ -90,7 +92,7 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
 
                 if cut != '':
                     cut_file = open(cut, "r", encoding='utf-8')
-                    #reader = csv.reader(cut_file, delimiter=' ')
+                    # reader = csv.reader(cut_file, delimiter=' ')
                     for row in cut_file:
                         row = row.rstrip()
                         # print(row[0], ' will by replaced by ', '<empty>')
@@ -125,7 +127,8 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
                             previous = regionEstimation
                             regionEstimation = regionEstimation.replace(row[0], row[1]).strip()
                             if verbose:
-                                print('ROW: ', separator.join(ipRecord.row), ', FIELD: REGION, OPERATION: REPLACE, BEFORE:',
+                                print('ROW: ', separator.join(ipRecord.row),
+                                      ', FIELD: REGION, OPERATION: REPLACE, BEFORE:',
                                       previous, 'AFTER: ', regionEstimation)
                     replace_file.close()
 
@@ -133,7 +136,7 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
 
                 if cut != '':
                     cut_file = open(cut, "r", encoding='utf-8')
-                    #reader = csv.reader(cut_file, delimiter=' ')
+                    # reader = csv.reader(cut_file, delimiter=' ')
                     for row in cut_file:
                         row = row.rstrip()
                         # print(row[0], ' will by replaced by ', '<empty>')
@@ -167,7 +170,8 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
                             previous = cityEstimation
                             cityEstimation = cityEstimation.replace(row[0], row[1]).strip()
                             if verbose:
-                                print('ROW: ', separator.join(ipRecord.row), ', FIELD: CITY, OPERATION: REPLACE, BEFORE:',
+                                print('ROW: ', separator.join(ipRecord.row),
+                                      ', FIELD: CITY, OPERATION: REPLACE, BEFORE:',
                                       previous, 'AFTER: ', cityEstimation)
                     replace_file.close()
 
@@ -175,7 +179,7 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
 
                 if cut != '':
                     cut_file = open(cut, "r", encoding='utf-8')
-                    #reader = csv.reader(cut_file, delimiter=' ')
+                    # reader = csv.reader(cut_file, delimiter=' ')
                     for row in cut_file:
                         row = row.rstrip()
                         # print(row[0], ' will by replaced by ', '<empty>')
@@ -230,6 +234,8 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
         if outputFile is not None:
             outputFile.close()
 
+
 if __name__ == "__main__":
     import doctest
+
     doctest.testmod()

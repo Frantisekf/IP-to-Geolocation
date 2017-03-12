@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 
-import datetime
-import urllib.request
-import urllib.parse
-import json
 import csv
+import datetime
+import json
+import urllib.parse
+import urllib.request
+
 from geopy.distance import vincenty
 
 url = "https://context.skyhookwireless.com/accelerator/ip"
 
 
 def check_ips(ipRecords, separator, cut, replace, verbose):
-
     #   Output file & Separator preparation
 
     if separator == 'tab':
@@ -19,7 +19,7 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
     else:
         separator = ' '
 
-    #   Get Current Time and Date for Filename
+    # Get Current Time and Date for Filename
     current_date_and_time = datetime.datetime.now().strftime("%Y%m%dT%H%M%S")
     filename = "./results/skyhookHyperlocal_" + current_date_and_time + ".dat"
     output_file = open(filename, "w", encoding="utf-8")
@@ -118,13 +118,13 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
                 if content_json['data']['location'].get('longitude'):
                     longitude = content_json['data']['location'].get('longitude')
 
-            # DEBUG - after retrieval
-            # print('Country: ' + country)
-            # print('Region: ' + region)
-            # print('City: ' + city)
-            # print('Latitude: ' + str(latitude))
-            # print('Longitude: ' + str(longitude))
-            # print('------------------------------------------------')
+                    # DEBUG - after retrieval
+                    # print('Country: ' + country)
+                    # print('Region: ' + region)
+                    # print('City: ' + city)
+                    # print('Latitude: ' + str(latitude))
+                    # print('Longitude: ' + str(longitude))
+                    # print('------------------------------------------------')
 
         # DATA MODIFICATION
 

@@ -3,8 +3,9 @@ import datetime
 import json
 import urllib
 import urllib.request
-from geopy.distance import vincenty
+
 import geocoder
+from geopy.distance import vincenty
 
 
 def check_ips(ipRecords, separator, cut, replace, verbose):
@@ -93,12 +94,14 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
         error = str(error)
 
         output_file.write(separator.join(ipRecord.row) + separator + "dpip2city" + separator + country +
-                      separator + country_match + separator + region + separator +
-                      region_match + separator + city + separator + city_match +
-                      separator + latitude + city + separator + city_match +
-                      separator + latitude + separator + longitude + separator +
-                      error + "\n")
+                          separator + country_match + separator + region + separator +
+                          region_match + separator + city + separator + city_match +
+                          separator + latitude + city + separator + city_match +
+                          separator + latitude + separator + longitude + separator +
+                          error + "\n")
+
 
 if __name__ == "__main__":
     import doctest
+
     doctest.testmod()

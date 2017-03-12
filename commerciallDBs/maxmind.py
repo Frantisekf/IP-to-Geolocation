@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 
-import datetime
 import csv
+import datetime
 import json
-import urllib.request
-import urllib.error
-from geopy.distance import vincenty
 import time
+import urllib.error
+import urllib.request
+
+from geopy.distance import vincenty
 
 
 def check_ips(ipRecords, separator, cut, replace, verbose):
-
     #   Output file & Separator preparation
 
     if separator == 'tab':
@@ -82,12 +82,12 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
                 continue
 
 
-            # print('Status Code: ' + str(myHttpError.code))
-            # print('Status Msg: ' + myHttpError.reason)
-            # continue
-            # if error.code == 402:
+                # print('Status Code: ' + str(myHttpError.code))
+                # print('Status Msg: ' + myHttpError.reason)
+                # continue
+                # if error.code == 402:
 
-        http_status_code = response.getcode()   # Status Code
+        http_status_code = response.getcode()  # Status Code
 
         content = response.read().decode(response.headers.get_content_charset())
         content_json = json.loads(content)

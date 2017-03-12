@@ -7,25 +7,28 @@ It will create list of IP records which needs to be checked.
 []
 """
 
-import datetime
-import urllib.request
-import urllib.parse
-import urllib.error
-import re
-from geopy.distance import vincenty
-import time
 import csv
+import datetime
+import re
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+
+from geopy.distance import vincenty
+
 #
 url = "https://www.neustar.biz/resources/tools/ip-geolocation-lookup-tool"
+
+
 #
 def check_ips(ipRecords, separator, cut, replace, verbose):
-
     if separator == 'tab':
         separator = '\t'
     else:
         separator = ' '
 
-    #   Get Current Time and Date for Filename
+    # Get Current Time and Date for Filename
     current_date_and_time = datetime.datetime.now().strftime("%Y%m%dT%H%M%S")
 
     #   Opening Input File
@@ -34,20 +37,21 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
         outputFile = open(filename, "w", encoding="utf-8")
 
         #   Debug
-        #for ipRecord in ipRecords:
+        # for ipRecord in ipRecords:
         #    outputFile.write(str(ipRecord) + "\n")
 
         for ipRecord in ipRecords:
 
             #   Checking for Incorrect input record
             if ipRecord.correct == 0:
-                outputFile.write(separator.join(ipRecord.row) + separator + "neustarWhere" + separator + "Error in input data in this line\n")
+                outputFile.write(separator.join(
+                    ipRecord.row) + separator + "neustarWhere" + separator + "Error in input data in this line\n")
                 continue
 
-            #print(ipRecord.countryCoordinate)
-            values = {'ip' : ipRecord.ip }
+            # print(ipRecord.countryCoordinate)
+            values = {'ip': ipRecord.ip}
             data = urllib.parse.urlencode(values)
-            headers = {'User-Agent':'Mozilla/5.0'}
+            headers = {'User-Agent': 'Mozilla/5.0'}
             data = data.encode('utf-8')
 
             request = urllib.request.Request(url, data, headers)
@@ -59,10 +63,10 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
                     ipRecord.row) + separator + "neustarWhere" + separator + "Maximum free requests reached!\n")
                 continue
 
-            #break
+            # break
 
-            #print(responseData)
-            #exit(1)
+            # print(responseData)
+            # exit(1)
 
             countryEstimation = "-"
             regionEstimation = "-"
@@ -75,21 +79,21 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
             regionEstimationMatch = "UNK"
             cityEstimationMatch = "UNK"
 
-            #print(type(responseData))
+            # print(type(responseData))
 
             ipInfoList = re.findall(r"\s*<td\s*[^<>]*>(\s*[^<>]*\s*)</td>\s*<td>(\s*[^<>]*\s*)</td>\s*", responseData)
 
-            #ipInfoList = re.findall(r'<tr>\s*<td.*>\s*([\w\s.-]+:)\s*</td>\s*<td>\s*([\w\s.-]+)\s*</td>\s*</tr>', responseData)
-            #print(ipInfoList)
-            #outputFile.write(str(ipInfoList))
+            # ipInfoList = re.findall(r'<tr>\s*<td.*>\s*([\w\s.-]+:)\s*</td>\s*<td>\s*([\w\s.-]+)\s*</td>\s*</tr>', responseData)
+            # print(ipInfoList)
+            # outputFile.write(str(ipInfoList))
 
-            #break
+            # break
 
             for ipInfo in ipInfoList:
                 if ipInfo[0] == "Country Code:":
                     countryEstimation = ipInfo[1].upper()
-        #            print("CountryEstimation: ", countryEstimation)
-        #            countryEstimation = countryEstimation.group().lstrip(' ').rstrip(' ')
+                    #            print("CountryEstimation: ", countryEstimation)
+                    #            countryEstimation = countryEstimation.group().lstrip(' ').rstrip(' ')
                     ########################## CUT & REPLACE ############################
 
                     #   REPLACE
@@ -111,7 +115,7 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
 
                     if cut != '':
                         cut_file = open(cut, "r", encoding='utf-8')
-                        #reader = csv.reader(cut_file, delimiter=' ')
+                        # reader = csv.reader(cut_file, delimiter=' ')
                         for row in cut_file:
                             row = row.strip()
                             # print(row[0], ' will by replaced by ', '<empty>')
@@ -131,8 +135,8 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
 
                 if ipInfo[0] == "Region:" and len(ipInfo[1]) != 0:
                     regionEstimation = ipInfo[1].lower()
-        #            print("regionEstimation: ", regionEstimation)
-        #            regionEstimation = regionEstimation.group().lstrip(' ').rstrip(' ')
+                    #            print("regionEstimation: ", regionEstimation)
+                    #            regionEstimation = regionEstimation.group().lstrip(' ').rstrip(' ')
                     ########################## CUT & REPLACE ############################
 
                     #   REPLACE
@@ -155,7 +159,7 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
 
                     if cut != '':
                         cut_file = open(cut, "r", encoding='utf-8')
-                        #reader = csv.reader(cut_file, delimiter=' ')
+                        # reader = csv.reader(cut_file, delimiter=' ')
                         for row in cut_file:
                             row = row.strip()
                             # print(row[0], ' will by replaced by ', '<empty>')
@@ -175,8 +179,8 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
 
                 if ipInfo[0] == "City:":
                     cityEstimation = ipInfo[1].capitalize()
-        #            print("CityEstimation: ", cityEstimation)
-        #            cityEstimation = cityEstimation.group().lstrip(' ').rstrip(' ')
+                    #            print("CityEstimation: ", cityEstimation)
+                    #            cityEstimation = cityEstimation.group().lstrip(' ').rstrip(' ')
                     ########################## CUT & REPLACE ############################
 
                     #   REPLACE
@@ -199,7 +203,7 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
 
                     if cut != '':
                         cut_file = open(cut, "r", encoding='utf-8')
-                        #reader = csv.reader(cut_file, delimiter=' ')
+                        # reader = csv.reader(cut_file, delimiter=' ')
                         for row in cut_file:
                             row = row.strip()
                             # print(row[0], ' will by replaced by ', '<empty>')
@@ -218,26 +222,26 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
                         cityEstimationMatch = "NO"
 
                 if ipInfo[0] == "Latitude:":
-        #            Coordinates = (re.search(r'^\s*(\d+.\d+), (\d+.\d+)', ipInfo[1]))
+                    #            Coordinates = (re.search(r'^\s*(\d+.\d+), (\d+.\d+)', ipInfo[1]))
                     latitudeEstimation = float(ipInfo[1])
-        #            longitudeEstimation = float(Coordinates.group(2))
-        #            print("LatitudeEstimation: ", latitudeEstimation)
-        #            print("Longitude: ", longitudeEstimation)
+                    #            longitudeEstimation = float(Coordinates.group(2))
+                    #            print("LatitudeEstimation: ", latitudeEstimation)
+                    #            print("Longitude: ", longitudeEstimation)
 
                 if ipInfo[0] == "Longitude:":
-        #            Coordinates = (re.search(r'^\s*(\d+.\d+), (\d+.\d+)', ipInfo[1]))
-        #            latitudeEstimation = float(ipInfo[1])
+                    #            Coordinates = (re.search(r'^\s*(\d+.\d+), (\d+.\d+)', ipInfo[1]))
+                    #            latitudeEstimation = float(ipInfo[1])
                     longitudeEstimation = float(ipInfo[1])
-        #            print("LatitudeEstimation: ", latitudeEstimation)
-        #            print("LongitudeEstimation: ", longitudeEstimation)
+                    #            print("LatitudeEstimation: ", latitudeEstimation)
+                    #            print("LongitudeEstimation: ", longitudeEstimation)
 
-            #    print(ipInfo[0],":\t\t\t",ipInfo[1])
+            # print(ipInfo[0],":\t\t\t",ipInfo[1])
 
             if str(latitudeEstimation) != "-" and str(longitudeEstimation) != "-":
                 inputCoordinates = (float(ipRecord.latitudeCoordinate), float(ipRecord.longitudeCoordinate))
-        #        #print(inputCoordinates)
+                #        #print(inputCoordinates)
                 dbipCoordinates = (latitudeEstimation, longitudeEstimation)
-        #        #print(dbipCoordinates)
+                #        #print(dbipCoordinates)
 
                 errorEstimation = vincenty(inputCoordinates, dbipCoordinates).kilometers
                 errorEstimation = str(errorEstimation)
@@ -245,7 +249,7 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
                 latitudeEstimation = str(latitudeEstimation)
                 longitudeEstimation = str(longitudeEstimation)
 
-        #    print(errorEstimation + "\n")
+                #    print(errorEstimation + "\n")
             outputFile.write(separator.join(ipRecord.row) + separator + "neustarWhere" + separator + countryEstimation +
                              separator + countryEstimationMatch + separator + regionEstimation + separator +
                              regionEstimationMatch + separator + cityEstimation + separator + cityEstimationMatch +
@@ -254,12 +258,12 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
 
             time.sleep(1)
 
-            #outputFile.write(separator.join(ipRecord) + separator + "dbIpToLoc" + separator +
+            # outputFile.write(separator.join(ipRecord) + separator + "dbIpToLoc" + separator +
             #                 countryEstimation + separator + countryEstimationMatch + separator +
             #                 regionEstimation + separator + regionEstimationMatch + separator +
             #                 cityEstimation + separator + cityEstimationMatch + separator +
             #                 latitudeEstimation + separator + longitudeEstimation + separator + errorEstimation + "\n")
-            #print("################################################################################")
+            # print("################################################################################")
 
     except (OSError, IOError) as error:
         print(error)
@@ -269,6 +273,8 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
         if outputFile is not None:
             outputFile.close()
 
+
 if __name__ == "__main__":
     import doctest
+
     doctest.testmod()

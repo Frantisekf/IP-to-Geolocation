@@ -7,14 +7,15 @@ It will create list of IP records which needs to be checked.
 []
 """
 
-import datetime
-import urllib.request
-import urllib.parse
-import urllib.error
-import re
-from geopy.distance import vincenty
-import time
 import csv
+import datetime
+import re
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+
+from geopy.distance import vincenty
 
 
 def check_ips(ipRecords, separator, cut, replace, verbose):
