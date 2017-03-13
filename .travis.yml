@@ -6,7 +6,6 @@ language: python
 python:
   - "3.4"
   - "3.5"
-  - "3.6"
   # PyPy versions
 
 
@@ -16,5 +15,5 @@ install:
   - pip install numpy
   - pip install folium
   - pip install geopy
-  - make build
-#script: pytest
+
+script: notests
