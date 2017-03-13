@@ -16,4 +16,4 @@ install:
   - pip install folium
   - pip install geopy
 
-script: notests
+script: main.py
