@@ -16,5 +16,5 @@ install:
   - pip install numpy
   - pip install folium
   - pip install geopy
-
-script: pytest
+  - make build
+#script: pytest
