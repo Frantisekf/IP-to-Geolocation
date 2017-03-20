@@ -79,6 +79,8 @@ def get_ip_records(filename, input_separator):
 
 # creates a df from output csv for each DB and prints folium map
 def process_output(path, separator):
+    frames = []
+
     for file in os.listdir(path):
         if file.endswith(".dat"):
             file = os.path.join(path, file)
@@ -87,28 +89,53 @@ def process_output(path, separator):
                        "instituteName", "latitude", "longitude", "comment", "database", "countryEst", "countryEst",
                        "regionEst", "regionEstMatch", "cityEst", "cityEstMatch", "latitudeEst", "longitudeEst",
                        "errorEst"]
+
             df = pd.read_csv(file, delimiter=separator, header=None, names=columns)
+            frames.append(df)
 
-            for index, row in df.iterrows():
-                map = folium.Map(location=[row['latitude'], row['longitude']], zoom_start=8)
-                # add markers
-                original = folium.Marker([row['latitude'], row['longitude']],
-                                         popup=row['serverName'] + ": " +
-                                               str(row['latitude']) + ';' + str(row['longitude'])).add_to(map)
-                estimate = folium.Marker([row['latitudeEst'], row['longitudeEst']],
-                                         popup=row['serverName'] + ": " +
-                                               str(row['latitudeEst']) + ';' + str(row['longitudeEst'])).add_to(map)
-                # add lines
-                points = [original.location, estimate.location]
-                folium.PolyLine(locations=points, color="red", weight=2.5, opacity=1).add_to(map)
-                # save map
-                map
+    # TODO color each db
+    for i in range(0, 10):
+        map = folium.Map(location=[0, 0], zoom_start=8)
+        for j in range(0, len(frames) - 1):
+            position = frames[j].iloc[i]
+            original = folium.Marker([position['latitude'], position['longitude']], popup=position['database']).add_to(
+                map)
+            estimate = folium.Marker([position['latitudeEst'], position['longitudeEst']],
+                                     popup=position['database']).add_to(map)
 
-                dbFolder = path + '/maps/' + str(row['database'])
-                if not os.path.exists(dbFolder):
-                    os.makedirs(dbFolder)
+        dbFolder = path + '/maps/' + str(i)
+        if not os.path.exists(dbFolder):
+            os.makedirs(dbFolder)
+            map.save(dbFolder + '/' + str(i) + '_' + '.html')
 
-                map.save(dbFolder + '/' + str(row['id']) + '_' + str(row['database']) + '.html')
+
+def mapDraw(df, path):
+    for index, row in df.iterrows():
+        map = folium.Map(location=[row['latitude'], row['longitude']], zoom_start=8)
+        # add markers
+        original = folium.Marker([row['latitude'], row['longitude']], popup=row['serverName'] + ": " +
+                                                                            str(row['latitude']) + ';' + str(
+            row['longitude']) + 'Error: ' + str(
+            row['errorEst'])).add_to(map)
+        estimate = folium.Marker([row['latitudeEst'], row['longitudeEst']],
+                                 popup=row['serverName'] + ": " +
+                                       str(row['latitudeEst']) + ';' + str(
+                                     row['longitudeEst']) + 'Error: ' + str(row['errorEst'])).add_to(map)
+        # add lines
+        points = [original.location, estimate.location]
+        folium.PolyLine(locations=points, color="red", weight=2.5, opacity=1).add_to(map)
+        # save map
+
+        dbFolder = path + '/maps/' + str(row['database'])
+        if not os.path.exists(dbFolder):
+            os.makedirs(dbFolder)
+
+        map.save(dbFolder + '/' + str(row['id']) + '_' + '.html')
+
+
+# TODO map layers with dbs checkboxes
+
+
 
 
 if __name__ == "__main__":

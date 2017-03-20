@@ -10,7 +10,7 @@ import urllib.request
 from geopy.distance import vincenty
 
 ############### KEY ###########################
-key = 'SAKRUG98WDQ6S73M884Z'  # AUTH KEY!#
+key = 'SAK535233J496335F36Z'  # AUTH KEY!#
 ###############################################
 
 url = 'http://api.eurekapi.com/iplocation/v1.8/locateip'

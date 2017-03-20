@@ -22,7 +22,7 @@ def check_ips(ipRecords, separator, cut, replace, verbose):
     output_file = open(filename, "w", encoding="utf-8")
 
     for ipRecord in ipRecords:
-        request = request.get('http://freegeoip.net/json/' + urllib.quote(ipRecord), timeout=62)
+        request = request.get('http://freegeoip.net/json/?q=' + urllib.quote(ipRecord), timeout=62)
 
         content = request.content
         content_json = json.loads(content)

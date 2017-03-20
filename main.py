@@ -7,7 +7,6 @@ import sys
 
 import fileprocessing
 from commerciallDBs import db_ip, eurek, ip2location, geobytes, ipinfo, neustar, maxmind, skyhook
-from nonCommerciallDbs import maxmindgeolite2city, freegeoip, ip2City, ip2locdb11lite
 
 __author__ = "Frantisek Farkas"
 
@@ -40,7 +39,7 @@ Databases & Links:
                             Eurek key section in source file ...
 
                             ############### KEY ###########################
-                            key = 'SAKRUG98WDQ6S73M884Z'        #AUTH KEY!#
+                            key = 'SAK535233J496335F36Z'        #AUTH KEY!#
                             ###############################################
 """)
 parser.add_argument("FILE", help="Input File")
@@ -53,10 +52,11 @@ parser.add_argument("-d", help='Geolocation Database to be used', dest='database
                                                                                                            'Neustar',
                                                                                                            'Geobytes',
                                                                                                            'Eurek',
-                                                                                                           'Ip2City',
-                                                                                                           'Maxmindgeolite2city',
-                                                                                                           'freegeoip',
-                                                                                                           'Ip2locdb11lite'])
+                                                                                                           # 'Ip2City',
+                                                                                                           # 'Maxmindgeolite2city',
+                                                                                                           # 'freegeoip',
+                                                                                                           # 'Ip2locdb11lite'
+                                                                                                           ])
 
 parser.add_argument("-i", help='Input File Records Delimiter', default='tab', dest='input_separator',
                     choices=['tab', 'space'])
@@ -78,10 +78,10 @@ databases["Geobytes"] = geobytes
 databases["Skyhook"] = skyhook
 databases["IPInfo"] = ipinfo
 databases["Eurek"] = eurek
-databases["Ip2locdb11lite"] = ip2locdb11lite
-databases["ip2City"] = ip2City
-databases["maxmindgeolite2city"] = maxmindgeolite2city
-databases["freegeoip"] = freegeoip
+# databases["Ip2locdb11lite"] = ip2locdb11lite
+# databases["ip2City"] = ip2City
+# databases["maxmindgeolite2city"] = maxmindgeolite2city
+#databases["freegeoip"] = freegeoip
 
 # Database or ALL Databases will be used
 
