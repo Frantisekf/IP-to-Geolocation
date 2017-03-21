@@ -15,5 +15,6 @@ install:
   - pip install numpy
   - pip install folium
   - pip install geopy
+  - pip install matplotlib
 
 script: main.py

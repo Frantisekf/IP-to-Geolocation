@@ -89,7 +89,7 @@ def process_output(path, separator):
                        "instituteName", "latitude", "longitude", "comment", "database", "countryEst", "countryEst",
                        "regionEst", "regionEstMatch", "cityEst", "cityEstMatch", "latitudeEst", "longitudeEst",
                        "errorEst"]
-
+            # TODO get max rows
             df = pd.read_csv(file, delimiter=separator, header=None, names=columns)
             frames.append(df)
 
@@ -98,10 +98,14 @@ def process_output(path, separator):
         map = folium.Map(location=[0, 0], zoom_start=8)
         for j in range(0, len(frames) - 1):
             position = frames[j].iloc[i]
+
             original = folium.Marker([position['latitude'], position['longitude']], popup=position['database']).add_to(
                 map)
+
+            if not isinstance(position['latitudeEst'], (int, float)):
+                break
             estimate = folium.Marker([position['latitudeEst'], position['longitudeEst']],
-                                     popup=position['database']).add_to(map)
+                                     popup=position['database'] + 'Estimation').add_to(map)
 
         dbFolder = path + '/maps/' + str(i)
         if not os.path.exists(dbFolder):
