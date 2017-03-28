@@ -16,5 +16,6 @@ install:
   - pip install folium
   - pip install geopy
   - pip install matplotlib
+  - pip install python3-tk
 
 script: main.py

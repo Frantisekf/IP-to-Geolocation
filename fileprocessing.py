@@ -12,6 +12,7 @@ import csv
 import os
 
 import folium
+import numpy as np
 import pandas as pd
 
 _IP_RECORD = collections.namedtuple("_IP_RECORD", "id ip dns continent countryCoordinate regionCoordinate cityCoordinate \
@@ -80,6 +81,14 @@ def get_ip_records(filename, input_separator):
 # creates a df from output csv for each DB and prints folium map
 def process_output(path, separator):
     frames = []
+    markers = {'dbIpToLoc': '#ff0000',
+               'eurekAPI': '#0000cc',
+               'geobytes': '#00cc00',
+               'ip2LocDb24': '#ffff00',
+               'ipInfo': '#66ffff',
+               'maxMindGeoIp2Pre': '#339933',
+               'neustarWhere': '#663300',
+               'skyhookHyperlocal': '#6600cc'}
 
     for file in os.listdir(path):
         if file.endswith(".dat"):
@@ -91,55 +100,55 @@ def process_output(path, separator):
                        "errorEst"]
             # TODO get max rows
             df = pd.read_csv(file, delimiter=separator, header=None, names=columns)
+
+            df.replace(['-'], 0, inplace=True)
+
             frames.append(df)
 
-    # TODO color each db
     for i in range(0, 10):
         map = folium.Map(location=[0, 0], zoom_start=8)
         for j in range(0, len(frames) - 1):
-            position = frames[j].iloc[i]
+            df_position = frames[j].iloc[i]
 
-            original = folium.Marker([position['latitude'], position['longitude']], popup=position['database']).add_to(
+            test = df_position['latitudeEst']
+
+            folium.Marker([df_position['latitude'], df_position['longitude']],
+                          popup=df_position['database'],
+                          icon=folium.Icon(color=markers[df_position['database']])).add_to(
                 map)
 
-            if not isinstance(position['latitudeEst'], (int, float)):
-                break
-            estimate = folium.Marker([position['latitudeEst'], position['longitudeEst']],
-                                     popup=position['database'] + 'Estimation').add_to(map)
+            folium.Marker([df_position['latitudeEst'], df_position['longitudeEst']],
+                          popup=df_position['database'] + 'Estimation',
+                          icon=folium.Icon(color=markers[df_position['database']]), ).add_to(map)
+
+            visualize(frames[j], path)
 
         dbFolder = path + '/maps/' + str(i)
         if not os.path.exists(dbFolder):
             os.makedirs(dbFolder)
-            map.save(dbFolder + '/' + str(i) + '_' + '.html')
+            map.save(dbFolder + '/' + str(i) + '_' + '. html')
 
 
-def mapDraw(df, path):
-    for index, row in df.iterrows():
-        map = folium.Map(location=[row['latitude'], row['longitude']], zoom_start=8)
-        # add markers
-        original = folium.Marker([row['latitude'], row['longitude']], popup=row['serverName'] + ": " +
-                                                                            str(row['latitude']) + ';' + str(
-            row['longitude']) + 'Error: ' + str(
-            row['errorEst'])).add_to(map)
-        estimate = folium.Marker([row['latitudeEst'], row['longitudeEst']],
-                                 popup=row['serverName'] + ": " +
-                                       str(row['latitudeEst']) + ';' + str(
-                                     row['longitudeEst']) + 'Error: ' + str(row['errorEst'])).add_to(map)
-        # add lines
-        points = [original.location, estimate.location]
-        folium.PolyLine(locations=points, color="red", weight=2.5, opacity=1).add_to(map)
-        # save map
+def visualize(df, path):
+    # distribution function
+    series = df.loc[:, 'errorEst']
+    series = series.convert_objects(convert_numeric=True)
+    series = series.dropna()
 
-        dbFolder = path + '/maps/' + str(row['database'])
-        if not os.path.exists(dbFolder):
-            os.makedirs(dbFolder)
+    series.sort_values()
 
-        map.save(dbFolder + '/' + str(row['id']) + '_' + '.html')
+    series[len(series)] = series.iloc[-1]
+
+    cum_dist = np.linspace(0., 1., len(series))
+    series_cdf = pd.Series(cum_dist, index=series)
+
+    series_cdf.plot()
+    # TODO save to pdf and add median
+    # plt.savefig(path + '/graphs/' + df['database'] + '_graphs' + '.pdf')
 
 
-# TODO map layers with dbs checkboxes
-
-
+    # median from error
+    # df['errorEst'].median()
 
 
 if __name__ == "__main__":

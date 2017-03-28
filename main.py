@@ -107,27 +107,27 @@ except OSError as error:
 
 # Definition of Main Processing
 def main():
-    ip_records = fileprocessing.get_ip_records(arguments.FILE, arguments.input_separator)
-
-    if ip_records is None:
-        print("Program exiting ...", file=sys.stderr)
-        return
-
-    if arguments.verbose:
-        print(
-            "Correct input record identified by 'correct=1' last field in _IP_RECORD tuple. Incorrect record identified by 'correct=0' field.")
-        for ipRecord in ip_records:
-            print(ipRecord)
-
-    if arguments.database == "all":
-        for value in databases.values():
-            value.check_ips(ip_records, arguments.output_separator, arguments.cut, arguments.replace, arguments.verbose)
-    else:
-        try:
-            databases[arguments.database].check_ips(ip_records, arguments.output_separator, arguments.cut,
-                                                    arguments.replace, arguments.verbose)
-        except KeyError as error:
-            print("Wrong Database name:", error, "See Help (-h) for Dabatases & Links name to use !", file=sys.stderr)
+    # ip_records = fileprocessing.get_ip_records(arguments.FILE, arguments.input_separator)
+    #
+    # if ip_records is None:
+    #     print("Program exiting ...", file=sys.stderr)
+    #     return
+    #
+    # if arguments.verbose:
+    #     print(
+    #         "Correct input record identified by 'correct=1' last field in _IP_RECORD tuple. Incorrect record identified by 'correct=0' field.")
+    #     for ipRecord in ip_records:
+    #         print(ipRecord)
+    #
+    # if arguments.database == "all":
+    #     for value in databases.values():
+    #         value.check_ips(ip_records, arguments.output_separator, arguments.cut, arguments.replace, arguments.verbose)
+    # else:
+    #     try:
+    #         databases[arguments.database].check_ips(ip_records, arguments.output_separator, arguments.cut,
+    #                                                 arguments.replace, arguments.verbose)
+    #     except KeyError as error:
+    #         print("Wrong Database name:", error, "See Help (-h) for Dabatases & Links name to use !", file=sys.stderr)
 
     fileprocessing.process_output(path, '\t')
 
