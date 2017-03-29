@@ -132,27 +132,27 @@ def process_output(path, separator):
 def visualize(df, path):
     # use PyPDF http://stackoverflow.com/questions/38118510/append-page-to-existing-pdf-file-using-python-and-matplotlib
     with PdfPages('Graphs.pdf') as pdf:
-    # distribution function
-    series = df.loc[:, 'errorEst']
-    series = series.convert_objects(convert_numeric=True)
-    series = series.dropna()
+        # distribution function
+        series = df.loc[:, 'errorEst']
+        series = series.convert_objects(convert_numeric=True)
+        series = series.dropna()
 
-    series.sort_values()
+        series.sort_values()
 
-    series[len(series)] = series.iloc[-1]
+        series[len(series)] = series.iloc[-1]
 
-    cum_dist = np.linspace(0., 1., len(series))
-    series_cdf = pd.Series(cum_dist, index=series)
+        cum_dist = np.linspace(0., 1., len(series))
+        series_cdf = pd.Series(cum_dist, index=series)
 
-    # median from error
-    median = df['errorEst'].median()
-    fig = series_cdf.plot()
-    pdf.savefig(fig)
+        # median from error
+        median = df['errorEst'].median()
+        fig = series_cdf.plot()
+        pdf.savefig(fig)
 
-    d = pdf.infodict()
-    d['Title'] = 'Grafy Geolokacnych databaz'
-    d['Subject'] = 'Graphs showing CDF of the vincenty error calculated on selected geolocation DBs'
-    d['CreationDate'] = datetime.datetime.today()
+        d = pdf.infodict()
+        d['Title'] = 'Grafy Geolokacnych databaz'
+        d['Subject'] = 'Graphs showing CDF of the vincenty error calculated on selected geolocation DBs'
+        d['CreationDate'] = datetime.datetime.today()
 
 
 
