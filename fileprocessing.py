@@ -9,11 +9,13 @@ It will create list of IP records which needs to be checked.
 
 import collections
 import csv
+import datetime
 import os
 
 import folium
 import numpy as np
 import pandas as pd
+from matplotlib.backends.backend_pdf import PdfPages
 
 _IP_RECORD = collections.namedtuple("_IP_RECORD", "id ip dns continent countryCoordinate regionCoordinate cityCoordinate \
     unknown_parameter_1 unknown_parameter_2 latitudeCoordinate longitudeCoordinate dns_correction \
@@ -110,8 +112,6 @@ def process_output(path, separator):
         for j in range(0, len(frames) - 1):
             df_position = frames[j].iloc[i]
 
-            test = df_position['latitudeEst']
-
             folium.Marker([df_position['latitude'], df_position['longitude']],
                           popup=df_position['database'],
                           icon=folium.Icon(color=markers[df_position['database']])).add_to(
@@ -130,6 +130,8 @@ def process_output(path, separator):
 
 
 def visualize(df, path):
+    # use PyPDF http://stackoverflow.com/questions/38118510/append-page-to-existing-pdf-file-using-python-and-matplotlib
+    with PdfPages('Graphs.pdf') as pdf:
     # distribution function
     series = df.loc[:, 'errorEst']
     series = series.convert_objects(convert_numeric=True)
@@ -142,13 +144,19 @@ def visualize(df, path):
     cum_dist = np.linspace(0., 1., len(series))
     series_cdf = pd.Series(cum_dist, index=series)
 
-    series_cdf.plot()
-    # TODO save to pdf and add median
-    # plt.savefig(path + '/graphs/' + df['database'] + '_graphs' + '.pdf')
-
-
     # median from error
-    # df['errorEst'].median()
+    median = df['errorEst'].median()
+    fig = series_cdf.plot()
+    pdf.savefig(fig)
+
+    d = pdf.infodict()
+    d['Title'] = 'Grafy Geolokacnych databaz'
+    d['Subject'] = 'Graphs showing CDF of the vincenty error calculated on selected geolocation DBs'
+    d['CreationDate'] = datetime.datetime.today()
+
+
+
+
 
 
 if __name__ == "__main__":
