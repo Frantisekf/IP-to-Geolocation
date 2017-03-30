@@ -9,14 +9,13 @@ It will create list of IP records which needs to be checked.
 
 import collections
 import csv
-import datetime
 import os
 
 import folium
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.backends.backend_pdf import PdfPages
-import matplotlib.pyplot as plt
 
 _IP_RECORD = collections.namedtuple("_IP_RECORD", "id ip dns continent countryCoordinate regionCoordinate cityCoordinate \
     unknown_parameter_1 unknown_parameter_2 latitudeCoordinate longitudeCoordinate dns_correction \
@@ -111,15 +110,16 @@ def process_output(path, separator):
     for i in range(0, 10):
         map = folium.Map(location=[0, 0], zoom_start=8)
         figures = []
+
         for j in range(0, len(frames) - 1):
             df_position = frames[j].iloc[i]
+            original = folium.RegularPolygonMarker([df_position['latitude'], df_position['longitude']],
+                                                   popup=df_position['database'],
+                                                   fill_color=markers[df_position['database']]).add_to(map)
 
-            folium.RegularPolygonMarker([df_position['latitude'], df_position['longitude']],
-                          popup=df_position['database'],fill_color=markers[df_position['database']]).add_to(map)
-
-            folium.RegularPolygonMarker([df_position['latitudeEst'], df_position['longitudeEst']],
-                          popup=df_position['database'] + 'Estimation',
-                          fill_color=markers[df_position['database']]).add_to(map)
+            estimate = folium.RegularPolygonMarker([df_position['latitudeEst'], df_position['longitudeEst']],
+                                                   popup=df_position['database'] + 'Estimation',
+                                                   fill_color=markers[df_position['database']]).add_to(map)
             # TODO draw lines
             figures.append(visualize(frames[j]))
 
@@ -131,32 +131,34 @@ def process_output(path, separator):
 
 
 def visualize(df):
-    # use PyPDF http://stackoverflow.com/questions/38118510/append-page-to-existing-pdf-file-using-python-and-matplotlib
-    # save figures to a list
-
-    # distribution function
     series = df.loc[:, 'errorEst']
-    pd.to_numeric(series)
+    series = series.convert_objects(convert_numeric=True)
     series = series.dropna()
 
+    # CDF calculation
     series.sort_values()
-
     series[len(series)] = series.iloc[-1]
-
     cum_dist = np.linspace(0., 1., len(series))
     series_cdf = pd.Series(cum_dist, index=series)
 
-    # median from error
+    # Quantile calculation
+    quantile = series.quantile(.1)
+
+    # Median calculation
     median = df['errorEst'].median()
 
-    fig = plt.figure(figsize=(12, 14))
+    # Figure plot
+    fig = plt.figure(figsize=(7, 5))
     series_cdf.plot()
-
-    plt.xlabel('Error')
-    plt.legend('Database: ' + df['database'] + '\n' + 'Median: ' + str(median))
     ax = plt.subplot(111)
+
+    # Graph properties
+    plt.xlabel('Vincenty distance error')
+    plt.title(str(df.loc[1, 'database']).upper() + ' CDF').set_weight('bold')
+    plt.legend(df['database'] + '\n' + 'Median: ' + str(round(median, 2)) + ' Quantile: ' + str(round(quantile, 2)))
     ax.spines['top'].set_visible(False)
     ax.spines["right"].set_visible(False)
+    ax.grid('on')
 
     return fig
 
