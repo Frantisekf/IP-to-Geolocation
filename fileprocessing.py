@@ -16,6 +16,7 @@ import folium
 import numpy as np
 import pandas as pd
 from matplotlib.backends.backend_pdf import PdfPages
+import matplotlib.pyplot as plt
 
 _IP_RECORD = collections.namedtuple("_IP_RECORD", "id ip dns continent countryCoordinate regionCoordinate cityCoordinate \
     unknown_parameter_1 unknown_parameter_2 latitudeCoordinate longitudeCoordinate dns_correction \
@@ -109,54 +110,61 @@ def process_output(path, separator):
 
     for i in range(0, 10):
         map = folium.Map(location=[0, 0], zoom_start=8)
+        figures = []
         for j in range(0, len(frames) - 1):
             df_position = frames[j].iloc[i]
 
-            folium.Marker([df_position['latitude'], df_position['longitude']],
-                          popup=df_position['database'],
-                          icon=folium.Icon(color=markers[df_position['database']])).add_to(
-                map)
+            folium.RegularPolygonMarker([df_position['latitude'], df_position['longitude']],
+                          popup=df_position['database'],fill_color=markers[df_position['database']]).add_to(map)
 
-            folium.Marker([df_position['latitudeEst'], df_position['longitudeEst']],
+            folium.RegularPolygonMarker([df_position['latitudeEst'], df_position['longitudeEst']],
                           popup=df_position['database'] + 'Estimation',
-                          icon=folium.Icon(color=markers[df_position['database']]), ).add_to(map)
-
-            visualize(frames[j], path)
+                          fill_color=markers[df_position['database']]).add_to(map)
+            # TODO draw lines
+            figures.append(visualize(frames[j]))
 
         dbFolder = path + '/maps/' + str(i)
         if not os.path.exists(dbFolder):
             os.makedirs(dbFolder)
-            map.save(dbFolder + '/' + str(i) + '_' + '. html')
+            map.save(dbFolder + '/' + str(i) + '_' + '.html')
+    save_to_pdf(figures)
 
 
-def visualize(df, path):
+def visualize(df):
     # use PyPDF http://stackoverflow.com/questions/38118510/append-page-to-existing-pdf-file-using-python-and-matplotlib
-    with PdfPages('Graphs.pdf') as pdf:
-        # distribution function
-        series = df.loc[:, 'errorEst']
-        series = series.convert_objects(convert_numeric=True)
-        series = series.dropna()
+    # save figures to a list
 
-        series.sort_values()
+    # distribution function
+    series = df.loc[:, 'errorEst']
+    pd.to_numeric(series)
+    series = series.dropna()
 
-        series[len(series)] = series.iloc[-1]
+    series.sort_values()
 
-        cum_dist = np.linspace(0., 1., len(series))
-        series_cdf = pd.Series(cum_dist, index=series)
+    series[len(series)] = series.iloc[-1]
 
-        # median from error
-        median = df['errorEst'].median()
-        fig = series_cdf.plot()
-        pdf.savefig(fig)
+    cum_dist = np.linspace(0., 1., len(series))
+    series_cdf = pd.Series(cum_dist, index=series)
 
-        d = pdf.infodict()
-        d['Title'] = 'Grafy Geolokacnych databaz'
-        d['Subject'] = 'Graphs showing CDF of the vincenty error calculated on selected geolocation DBs'
-        d['CreationDate'] = datetime.datetime.today()
+    # median from error
+    median = df['errorEst'].median()
+
+    fig = plt.figure(figsize=(12, 14))
+    series_cdf.plot()
+
+    plt.xlabel('Error')
+    plt.legend('Database: ' + df['database'] + '\n' + 'Median: ' + str(median))
+    ax = plt.subplot(111)
+    ax.spines['top'].set_visible(False)
+    ax.spines["right"].set_visible(False)
+
+    return fig
 
 
-
-
+def save_to_pdf(figures):
+    with PdfPages('Graph_result.pdf') as pdf:
+        for fig in figures:
+            pdf.savefig(fig)
 
 
 if __name__ == "__main__":
