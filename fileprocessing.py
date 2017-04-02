@@ -110,17 +110,21 @@ def process_output(path, separator):
     for i in range(0, 10):
         map = folium.Map(location=[0, 0], zoom_start=8)
         figures = []
-
         for j in range(0, len(frames) - 1):
-            df_position = frames[j].iloc[i]
-            original = folium.RegularPolygonMarker([df_position['latitude'], df_position['longitude']],
-                                                   popup=df_position['database'],
-                                                   fill_color=markers[df_position['database']]).add_to(map)
-
-            estimate = folium.RegularPolygonMarker([df_position['latitudeEst'], df_position['longitudeEst']],
-                                                   popup=df_position['database'] + 'Estimation',
-                                                   fill_color=markers[df_position['database']]).add_to(map)
-            # TODO draw lines
+            df_idx = frames[j].iloc[i]
+            original = folium.RegularPolygonMarker([df_idx['latitude'], df_idx['longitude']],
+                                                   popup=df_idx['database'] + 'Estimation: ' + str(df_idx[
+                                                                                                       'latitude']) + '; ' + str(
+                                                       df_idx['longitude']),
+                                                   fill_color=markers[df_idx['database']]).add_to(map)
+            estimate = folium.RegularPolygonMarker([df_idx['latitudeEst'], df_idx['longitudeEst']],
+                                                   popup=df_idx['database'] + 'Estimation: '
+                                                         + str(df_idx['latitudeEst']) + '; ' + str(
+                                                       df_idx['longitudeEst']) + '\nError: '
+                                                         + str(df_idx['errorEst']),
+                                                   fill_color=markers[df_idx['database']]).add_to(map)
+            # Draw lines
+            # folium.PolyLine(locations=[original.location, estimate.location], color=df_idx['database'], weight=2.5, opacity=1).add_to(map)
             figures.append(visualize(frames[j]))
 
         dbFolder = path + '/maps/' + str(i)
@@ -133,7 +137,11 @@ def process_output(path, separator):
 def visualize(df):
     series = df.loc[:, 'errorEst']
     series = series.convert_objects(convert_numeric=True)
-    series = series.dropna()
+    series = series[series > 0]
+
+    # Check is series is empty
+    if len(series) == 0:
+        return
 
     # CDF calculation
     series.sort_values()
@@ -155,10 +163,11 @@ def visualize(df):
     # Graph properties
     plt.xlabel('Vincenty distance error')
     plt.title(str(df.loc[1, 'database']).upper() + ' CDF').set_weight('bold')
-    plt.legend(df['database'] + '\n' + 'Median: ' + str(round(median, 2)) + ' Quantile: ' + str(round(quantile, 2)))
+    plt.legend(df['database'] + '\n' + 'Median: ' + str(round(median, 2)) + ' Quantile: ' + str(round(quantile, 2)),
+               loc='best')
     ax.spines['top'].set_visible(False)
     ax.spines["right"].set_visible(False)
-    ax.grid('on')
+    ax.grid('off')
 
     return fig
 
