@@ -108,35 +108,39 @@ def process_output(path, separator):
             frames.append(df)
 
     for i in range(0, 10):
-        map = folium.Map(location=[0, 0], zoom_start=8)
+        map = folium.Map(location=[0, 0], zoom_start=1)
         figures = []
         for j in range(0, len(frames) - 1):
             df_idx = frames[j].iloc[i]
-            original = folium.RegularPolygonMarker([df_idx['latitude'], df_idx['longitude']],
-                                                   popup=df_idx['database'] + 'Estimation: ' + str(df_idx[
-                                                                                                       'latitude']) + '; ' + str(
-                                                       df_idx['longitude']),
+            original = folium.RegularPolygonMarker(location=[df_idx['latitude'], df_idx['longitude']],
+                                                   popup=df_idx['database'] + ': ' + str(df_idx['latitude']) + '; '
+                                                         + str(df_idx['longitude']),
                                                    fill_color=markers[df_idx['database']]).add_to(map)
-            estimate = folium.RegularPolygonMarker([df_idx['latitudeEst'], df_idx['longitudeEst']],
+            estimate = folium.RegularPolygonMarker(location=[df_idx['latitudeEst'], df_idx['longitudeEst']],
                                                    popup=df_idx['database'] + 'Estimation: '
-                                                         + str(df_idx['latitudeEst']) + '; ' + str(
-                                                       df_idx['longitudeEst']) + '\nError: '
+                                                         + str(df_idx['latitudeEst']) + '; '
+                                                         + str(df_idx['longitudeEst']) + '\nError: '
                                                          + str(df_idx['errorEst']),
                                                    fill_color=markers[df_idx['database']]).add_to(map)
-            # Draw lines
-            # folium.PolyLine(locations=[original.location, estimate.location], color=df_idx['database'], weight=2.5, opacity=1).add_to(map)
-            figures.append(visualize(frames[j]))
+            # folium.PolyLine([original.location, estimate.location], color='red', weight=1.5,
+            # opacity=1).add_to(map)
+            figures.append(plot_cdf(frames[j]))
+            clean_figs = [x for x in figures if x is not None]
+            figures.clear()
+            plt.close()
 
         dbFolder = path + '/maps/' + str(i)
         if not os.path.exists(dbFolder):
             os.makedirs(dbFolder)
             map.save(dbFolder + '/' + str(i) + '_' + '.html')
-    save_to_pdf(figures)
+    save_to_pdf(clean_figs)
 
 
-def visualize(df):
+# Calculates CDF, quantile
+def plot_cdf(df):
     series = df.loc[:, 'errorEst']
-    series = series.convert_objects(convert_numeric=True)
+    pd.to_numeric(series)
+    #series = series.convert_objects(convert_numeric=True) deprecated
     series = series[series > 0]
 
     # Check is series is empty
@@ -167,15 +171,26 @@ def visualize(df):
                loc='best')
     ax.spines['top'].set_visible(False)
     ax.spines["right"].set_visible(False)
-    ax.grid('off')
 
     return fig
+
+
+# TODO graph from tables
+# def plot_identity(frames):
+
+# check every table add to counters
+# plot graph
+
+# TODO make table of quantile output
+# def make_table(df):
 
 
 def save_to_pdf(figures):
     with PdfPages('Graph_result.pdf') as pdf:
         for fig in figures:
             pdf.savefig(fig)
+
+
 
 
 if __name__ == "__main__":
