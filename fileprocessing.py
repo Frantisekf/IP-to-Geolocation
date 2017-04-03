@@ -140,7 +140,7 @@ def process_output(path, separator):
 def plot_cdf(df):
     series = df.loc[:, 'errorEst']
     pd.to_numeric(series)
-    #series = series.convert_objects(convert_numeric=True) deprecated
+    # series = series.convert_objects(convert_numeric=True) deprecated
     series = series[series > 0]
 
     # Check is series is empty
@@ -189,8 +189,6 @@ def save_to_pdf(figures):
     with PdfPages('Graph_result.pdf') as pdf:
         for fig in figures:
             pdf.savefig(fig)
-
-
 
 
 if __name__ == "__main__":
