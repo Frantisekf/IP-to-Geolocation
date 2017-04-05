@@ -100,15 +100,15 @@ def process_output(path, separator):
                        "instituteName", "latitude", "longitude", "comment", "database", "countryEst", "countryEst",
                        "regionEst", "regionEstMatch", "cityEst", "cityEstMatch", "latitudeEst", "longitudeEst",
                        "errorEst"]
-            # TODO get max rows
-            df = pd.read_csv(file, delimiter=separator, header=None, names=columns)
 
+            df = pd.read_csv(file, delimiter=separator, header=None, names=columns)
+            row_count = df['id'].count()
             df.replace(['-'], 0, inplace=True)
 
             frames.append(df)
 
     # generate folium map and graph report
-    for i in range(0, 10):
+    for i in range(0, row_count):
         map = folium.Map(location=[0, 0], zoom_start=1)
         figures = []
         for j in range(0, len(frames) - 1):
@@ -127,16 +127,16 @@ def process_output(path, separator):
             # opacity=1).add_to(map)
             figures.append(plot_cdf(frames[j]))
             clean_figs = [x for x in figures if x is not None]
-            figures.clear()
+
             plt.close()
 
         dbFolder = path + '/maps/' + str(i)
         if not os.path.exists(dbFolder):
             os.makedirs(dbFolder)
             map.save(dbFolder + '/' + str(i) + '_' + '.html')
-
-        save_to_pdf(clean_figs)
-        get_table(frames)
+    figures.clear()
+    save_to_pdf(clean_figs)
+    get_table(frames)
 
 
 # Calculates CDF
