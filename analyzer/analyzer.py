@@ -20,16 +20,9 @@ if arguments.perform == "yes":
     replace_dict = open('replace.txt', 'w', encoding='utf-8')
     cut_dict = open('cut.txt', 'w', encoding='utf-8')
 
-country_no = 0
-country_yes = 0
-region_no = 0
-region_yes = 0
-city_no = 0
-city_yes = 0
+country_no = country_yes = region_no = region_yes = city_no = city_yes = 0
 
-country_rules = 0
-region_rules = 0
-city_rules = 0
+country_rules = region_rules = city_rules = 0
 
 pairs = dict()
 
