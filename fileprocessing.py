@@ -111,6 +111,7 @@ def process_output(path, separator):
     for i in range(0, row_count):
         map = folium.Map(location=[0, 0], zoom_start=1)
         figures = []
+        figs = np.array([])
         for j in range(0, len(frames) - 1):
             df_idx = frames[j].iloc[i]
             original = folium.RegularPolygonMarker(location=[df_idx['latitude'], df_idx['longitude']],
@@ -172,11 +173,14 @@ def plot_cdf(df):
 
 
 def get_table(frames):
-    table = pd.DataFrame(columns=['Database', 'Median', 'Quantile', 'Tertiles', 'Quartiles', 'Quintiles', 'Octiles'],
-                         index=range(len(frames)))
+    table = pd.DataFrame(
+        columns=['Database', 'Median', 'Quantile', 'Tertiles', 'Quartiles', 'Quintiles', 'Octiles', 'StandardDeviation',
+                 'Mean'],
+        index=range(len(frames)))
     i = 0
     for frame in frames:
         err_row = frame.loc[:, 'errorEst']
+        pd.to_numeric(err_row)
         table.loc[i].Database = str(frame.loc[1, 'database'])
         table.loc[i].Median = round(err_row.median(), 2)
         table.loc[i].Quantile = round(err_row.quantile(.1), 2)
@@ -184,10 +188,12 @@ def get_table(frames):
         table.loc[i].Quartiles = round(err_row.quantile(.4), 2)
         table.loc[i].Quintiles = round(err_row.quantile(.5), 2)
         table.loc[i].Octiles = round(err_row.quantile(.8), 2)
+        table.loc[i].StandardDeviation = pd.Series(err_row).std()
+        table.loc[i].Mean = pd.Series(err_row).mean()
         i += 1
 
     with open('table.tex', 'w') as file:
-        file.write(table.to_latex(bold_rows=True))
+        file.write(table.to_latex(bold_rows=True) + '\n')
 
 
 def save_to_pdf(figures):
