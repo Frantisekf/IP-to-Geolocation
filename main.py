@@ -5,24 +5,30 @@ import argparse
 import os
 import sys
 
-import fileprocessing
-from commerciallDBs import db_ip, eurek, ip2location, geobytes, ipinfo, neustar, maxmind, skyhook
+from resources import fileprocessing
+from resources.commerciallDBs import db_ip, eurek, ip2location, geobytes, ipinfo, maxmind, skyhook
+from resources.commerciallDBs import neustar
+from resources.nonCommerciallDbs import freegeoip, ip2locdb11lite
+from resources.nonCommerciallDbs import maxmindgeolite2city
 
 __author__ = "Frantisek Farkas"
 
 delimiter = "\t"
 
 if sys.version_info.major != 3:
-    print("ERROR: Run this script with Python 3!", file=sys.stderr)
+    print("ERROR: Run this script with Python 3.5!", file=sys.stderr)
     sys.exit(1)
 
 parser = argparse.ArgumentParser(usage="""
-python3 geolocator.py FILE [-h] [-v] -i {tab,space} -o {tab,space} -c {file} -r {file} -d {all,DB-IP,MaxMind,IPInfo,IP2Location,Skyhook,Neustar,Geobytes}
+python3 geolocator.py FILE [-h] [-v] -i {tab,space} -o {tab,space} -c {file} -r {file} -d {all,DB-IP,MaxMind,IPInfo,
+IP2Location,Skyhook,Neustar,Geobytes,Freegeoip, Maxmindgeolite2city, Ip2locdb11lite}
 
 examples:
-python3 geolocator.py input.dat -d IPInfo -v -i tab -o space
-python3 geolocator.py -d MaxMind -v -i tab input.dat
-python3 geolocator.py -d DB-IP -i tab -v -o space input.dat
+python3 main.py input.dat -d IPInfo -v -i tab -o space
+python3 main.py -d MaxMind -v -i tab input.dat
+python3 main.py -d DB-IP -i tab -v -o space input.dat
+
+#dalsie DBs
 
 Databases & Links:
   IPInfo                    http://www.iplocation.net/ (2nd table records "ipInfo.io")
@@ -32,7 +38,6 @@ Databases & Links:
   Skyhook                   https://context.skyhookwireless.com
   Neustar                   http://www.neustar.biz/services
   Geobytes                  http://www.geobytes.com/IpLocator.htm?GetLocation
-
   Eurek                     REGISTRATION REQUIRED ! Fill the KEY string in source file at the begining.
                             https://www.eurekapi.com
 
@@ -41,6 +46,10 @@ Databases & Links:
                             ############### KEY ###########################
                             key = 'SAK535233J496335F36Z'        #AUTH KEY!#
                             ###############################################
+
+  maxmindgeolite2city       http://www.maxmind.com/en/home
+  Freegeoip                 http://freegeoip.net/
+  Ip2locdb11lite            http://lite.ip2location.com/
 """)
 parser.add_argument("FILE", help="Input File")
 parser.add_argument("-d", help='Geolocation Database to be used', dest='database', required=True, choices=['all',
@@ -53,9 +62,10 @@ parser.add_argument("-d", help='Geolocation Database to be used', dest='database
                                                                                                            'Geobytes',
                                                                                                            'Eurek',
                                                                                                            # 'Ip2City',
-                                                                                                           # 'Maxmindgeolite2city',
-                                                                                                           # 'freegeoip',
-                                                                                                           # 'Ip2locdb11lite'
+                                                                                                           'Maxmindgeolite2city',
+                                                                                                           'Freegeoip',
+                                                                                                           'Ip2locdb11lite',
+                                                                                                           # 'hostIP'
                                                                                                            ])
 
 parser.add_argument("-i", help='Input File Records Delimiter', default='tab', dest='input_separator',
@@ -68,7 +78,7 @@ parser.add_argument("-r", help='Replace words in specified file', dest='replace'
 
 arguments = parser.parse_args()
 
-#   Databases modules Dictonary
+# Databases modules Dictonary
 databases = dict()
 databases["DB-IP"] = db_ip
 databases["MaxMind"] = maxmind
@@ -78,10 +88,11 @@ databases["Geobytes"] = geobytes
 databases["Skyhook"] = skyhook
 databases["IPInfo"] = ipinfo
 databases["Eurek"] = eurek
-# databases["Ip2locdb11lite"] = ip2locdb11lite
+databases["Ip2locdb11lite"] = ip2locdb11lite
 # databases["ip2City"] = ip2City
-# databases["maxmindgeolite2city"] = maxmindgeolite2city
-#databases["freegeoip"] = freegeoip
+databases["Maxmindgeolite2city"] = maxmindgeolite2city
+databases["Freegeoip"] = freegeoip
+# databases["hostIP"] = hostIp
 
 # Database or ALL Databases will be used
 
@@ -128,7 +139,7 @@ def main():
     #                                                 arguments.replace, arguments.verbose)
     #     except KeyError as error:
     #         print("Wrong Database name:", error, "See Help (-h) for Dabatases & Links name to use !", file=sys.stderr)
-
+    #
     fileprocessing.process_output(path, '\t')
 
 
