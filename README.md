@@ -36,11 +36,11 @@ Argument flags:
     -r  Replace words in specified file
 
 
-Structure
+Directory Structure
 -------------------
 
 * resources
-    * helpers
+       * helpers
        * nonCommerciallDBS - resource modules for querying DBs
        * commerciallDBs
        * databaseFiles - files containing downloadable database(.BIN)
