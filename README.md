@@ -29,7 +29,7 @@ Example of script usage:
    python3 main.py -d MaxMind -v -i tab input.dat
    python3 main.py -d DB-IP -i tab -v -o space input.dat
 
-Argument flags:
+Argument flags: <br />
     -i  input File Records Delimiter <br />
     -o  Output File Records Delimiter <br />
     -v  Increase Output Verbosity <br />
