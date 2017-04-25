@@ -80,6 +80,7 @@ def get_ip_records(filename, input_separator):
     return ip_records
 
 
+
 def process_output(path, separator):
     frames = []
     markers = {'dbIpToLoc': '#ff0000',
@@ -93,6 +94,7 @@ def process_output(path, separator):
 
     # read .dat files to dataframes
     for file in os.listdir(path):
+
         if file.endswith(".dat"):
             file = os.path.join(path, file)
 
@@ -136,7 +138,7 @@ def process_output(path, separator):
             os.makedirs(dbFolder)
             map.save(dbFolder + '/' + str(i) + '_' + '.html')
     figures.clear()
-    save_to_pdf(clean_figs)
+    save_to_pdf(clean_figs, path)
     get_table(frames)
 
 
@@ -196,8 +198,8 @@ def get_table(frames):
         file.write(table.to_latex(bold_rows=True) + '\n')
 
 
-def save_to_pdf(figures):
-    with PdfPages('Graph_result.pdf') as pdf:
+def save_to_pdf(figures, path):
+    with PdfPages(path + '/Graph_result.pdf') as pdf:
         for fig in figures:
             pdf.savefig(fig)
 
