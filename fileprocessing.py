@@ -93,6 +93,10 @@ def get_ip_records(filename, input_separator):
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+# creates a df from output csv for each DB and prints folium map
+>>>>>>> parent of 4c030c8... get_table function added + minor changes
 def process_output(path, separator):
     frames = []
     markers = {'dbIpToLoc': '#ff0000',
@@ -104,7 +108,6 @@ def process_output(path, separator):
                'neustarWhere': '#663300',
                'skyhookHyperlocal': '#6600cc'}
 
-    # read .dat files to dataframes
     for file in os.listdir(path):
         if file.endswith(".dat"):
             file = os.path.join(path, file)
@@ -120,8 +123,12 @@ def process_output(path, separator):
 
             frames.append(df)
 
+<<<<<<< HEAD
     # generate folium map and graph report
     for i in range(0, row_count):
+=======
+    for i in range(0, 10):
+>>>>>>> parent of 4c030c8... get_table function added + minor changes
         map = folium.Map(location=[0, 0], zoom_start=1)
         figures = []
         figs = np.array([])
@@ -148,12 +155,16 @@ def process_output(path, separator):
         if not os.path.exists(dbFolder):
             os.makedirs(dbFolder)
             map.save(dbFolder + '/' + str(i) + '_' + '.html')
+<<<<<<< HEAD
     figures.clear()
     save_to_pdf(clean_figs)
     get_table(frames)
+=======
+    save_to_pdf(clean_figs)
 
+>>>>>>> parent of 4c030c8... get_table function added + minor changes
 
-# Calculates CDF
+# Calculates CDF, quantile
 def plot_cdf(df):
     series = df.loc[:, 'errorEst']
     pd.to_numeric(series)
@@ -170,6 +181,12 @@ def plot_cdf(df):
     cum_dist = np.linspace(0., 1., len(series))
     series_cdf = pd.Series(cum_dist, index=series)
 
+    # Quantile calculation
+    quantile = series.quantile(.1)
+
+    # Median calculation
+    median = df['errorEst'].median()
+
     # Figure plot
     fig = plt.figure(figsize=(7, 5))
     series_cdf.plot()
@@ -178,13 +195,15 @@ def plot_cdf(df):
     # Graph properties
     plt.xlabel('Vincenty distance error')
     plt.title(str(df.loc[1, 'database']).upper() + ' CDF').set_weight('bold')
-    plt.legend(df['database'], loc='best')
+    plt.legend(df['database'] + '\n' + 'Median: ' + str(round(median, 2)) + ' Quantile: ' + str(round(quantile, 2)),
+               loc='best')
     ax.spines['top'].set_visible(False)
     ax.spines["right"].set_visible(False)
 
     return fig
 
 
+<<<<<<< HEAD
 def get_table(frames):
     table = pd.DataFrame(
         columns=['Database', 'Median', 'Quantile', 'Tertiles', 'Quartiles', 'Quintiles', 'Octiles', 'StandardDeviation',
@@ -207,6 +226,16 @@ def get_table(frames):
 
     with open('table.tex', 'w') as file:
         file.write(table.to_latex(bold_rows=True) + '\n')
+=======
+# TODO graph from tables
+# def plot_identity(frames):
+
+# check every table add to counters
+# plot graph
+
+# TODO make table of quantile output
+# def make_table(df):
+>>>>>>> parent of 4c030c8... get_table function added + minor changes
 
 
 def save_to_pdf(figures):
