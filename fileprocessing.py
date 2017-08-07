@@ -94,9 +94,12 @@ def get_ip_records(filename, input_separator):
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 # creates a df from output csv for each DB and prints folium map
 >>>>>>> parent of 4c030c8... get_table function added + minor changes
+=======
+>>>>>>> parent of 34ac9a7... minor fixes
 def process_output(path, separator):
     frames = []
     markers = {'dbIpToLoc': '#ff0000',
