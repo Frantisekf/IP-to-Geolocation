@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Overview
 -------------------
 Author: Frantisek Farkas <br />
@@ -80,3 +81,6 @@ maxmindgeolite2city       http://www.maxmind.com/en/home <br />
 Freegeoip                 http://freegeoip.net/ <br />
 Ip2locdb11lite            http://lite.ip2location.com/ <br />
 
+=======
+This application implements commerciall and non-commerciall IP Geolocation databases and analyses the results.
+>>>>>>> parent of 34ac9a7... minor fixes
