@@ -10,12 +10,24 @@ It will create list of IP records which needs to be checked.
 import collections
 import csv
 import os
+<<<<<<< HEAD
 
 import folium
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.backends.backend_pdf import PdfPages
+=======
+import pandas as pd
+import folium
+import mapgenerator
+
+# class IncorrectInputLine(Exception): pass
+
+# _IP_RECORD = collections.namedtuple("_IP_RECORD", "id ip dns countryCoordinate regionCoordinate cityCoordinate \
+#                                    unknown_parameter_1 unknown_parameter_2 latitudeCoordinate longitudeCoordinate \
+#                                    row correct")
+>>>>>>> parent of 82047a2... folium map generation fully implemented +  some minor code changes and reformatting
 
 _IP_RECORD = collections.namedtuple("_IP_RECORD", "id ip dns continent countryCoordinate regionCoordinate cityCoordinate \
     unknown_parameter_1 unknown_parameter_2 latitudeCoordinate longitudeCoordinate dns_correction \
@@ -80,6 +92,7 @@ def get_ip_records(filename, input_separator):
     return ip_records
 
 
+<<<<<<< HEAD
 def process_output(path, separator):
     frames = []
     markers = {'dbIpToLoc': '#ff0000',
@@ -200,6 +213,51 @@ def save_to_pdf(figures):
     with PdfPages('Graph_result.pdf') as pdf:
         for fig in figures:
             pdf.savefig(fig)
+=======
+def process_output(input_path, output_path, input_separator, output_separator):
+    for fname in os.listdir(output_path):
+        if fname.endswith('.dat'):
+            try:
+                open(fname, 'w').readlines()
+            except FileNotFoundError:
+                print("No file found in the directory!")
+            else:
+                # df from input csv
+                input_df = pd.read_csv(input_path, delimiter=input_separator, header=None,
+                                       names=["id", "ip_address", "server_name", "continent", "country", "city",
+                                              "region", "website", "institute_name", "latitude", "longitude",
+                                              "comment"])
+
+                # df from output csv for each DB
+                output_df = pd.read_csv(fname, delimiter=output_separator, header=None,
+                                        names=["name_result", "country_result", "country match_result",
+                                               "region_result", "region_match_result",
+                                               "city_result", "city_match_result", "latitude_result",
+                                               "longitude_result",
+                                               "error"])
+
+                # joined dataframes input & output
+                dfs = input_df.join(output_df)
+                for index, row in dfs.iterrows():
+                    if row['latitude'] != row['latitude_result'] and row['longitude'] != row['longitude_result']:
+                        map = folium.Map(location=[row['latitude'], row['longitude']], zoom_start=1)
+                        # folium markers
+                        folium.Marker([row['latitude'], row['longitude']],
+                                      popup=row['server_name'] + ": " + row['ip_address'])
+                        folium.Marker([row['latitude_result'], row['longitude_result']],
+                                      popup=row['server_name'] + ": " + row['latitude_result'] + row[
+                                          'longitude_result'])
+                        # drawing lines
+                        folium.PolyLine(locations=[row['latitude'], row['longitude'],
+                                                   [row['latitude_result'], row['longitude_result']]], color="red",
+                                        weight=2.5, opacity=1).add_to(map)
+                        map.save('./results/maps/' + row['id'] + '.html')
+            break
+
+        break
+
+
+>>>>>>> parent of 82047a2... folium map generation fully implemented +  some minor code changes and reformatting
 
 
 if __name__ == "__main__":
